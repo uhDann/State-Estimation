@@ -19,20 +19,20 @@ function [X_Est, P_Est, GT] = EKF(out)
 
 % N x 1
 % Updates @ 200Hz
-tIMU = out.tIMU.time;
+tIMU = out.Sensor_Time.time;
 
-% 1 x 3 x N
+% 3 x N
 % Updates @ 104Hz
-accelRaw = out.Sensor_ACCEL.signals.values;
-accelLPRaw = out.Sensor_LP_ACCEL.signals.values;
+accelRaw = squeeze(out.Sensor_ACCEL.signals.values)';
+accelLPRaw = squeeze(out.Sensor_LP_ACCEL.signals.values)';
 
-% 1 x 3 x N
+% 3 x N
 % Updates @ 104Hz
-gyroRaw  = out.Sensor_GYRO.signals.values;
+gyroRaw  = squeeze(out.Sensor_GYRO.signals.values)';
 
-% 1 x 3 x N
+% 3 x N
 % Updates @ 50
-magRaw   = out.Sensor_MAG.signals.values;
+magRaw   = squeeze(out.Sensor_MAG.signals.values)';
 
 % N x 4
 % Updates @ 10Hz
@@ -57,7 +57,8 @@ X_Est_out = zeros(5, N);
 P_Est_out = cell(N, 1);
 
 % Initial state (assume first GT position is accurate)
-X_k = [gt_pos(1,1:2), 0, 0, 0]';  % [x, y, theta, vx, vy]
+% [x, y, theta, vx, vy]
+X_k = [gt_pos(1,1:2), 0, 0, 0]';
 P_k = eye(5) * 0.5;
 
 % Process noise covariance
@@ -72,9 +73,10 @@ for k = 2:N
     prevTime = currentTime;
     
     % Get sensor measurements
-    omega_z = gyroRaw(k, 3); % Yaw rate from gyroscope
-    a_x = accelRaw(k, 1);
-    a_y = accelRaw(k, 2);
+    % Z in global frame
+    omega_z = gyroRaw(k, 1);
+    a_x = accelRaw(k, 2);
+    a_y = accelRaw(k, 3);
     
     % ToF readings (distances)
     z_tof = [ToF1(k,1); ToF2(k,1); ToF3(k,1)];
