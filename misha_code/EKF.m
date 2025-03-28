@@ -23,20 +23,20 @@ tIMU = out.Sensor_Time.time;
 
 % TODO: implement calibration functions for each sensor which can be calibrated as with the magnetometer
 
-% 3 x N
+% N x 3
 % Updates @ 104Hz
 accelRaw = squeeze(out.Sensor_ACCEL.signals.values)';
 accelLPRaw = squeeze(out.Sensor_LP_ACCEL.signals.values)';
 
-% 3 x N
+% N x 3
 % Updates @ 104Hz
 gyroRaw  = squeeze(out.Sensor_GYRO.signals.values)';
 
-% 3 x N
+% N x 3
 % Updates @ 50
 magRaw   = squeeze(out.Sensor_MAG.signals.values)';
 
-% 1 x N
+% N x 1
 % Heading in radians for each timestep
 magCal = calibrate_magnetometer(magRaw);
 
