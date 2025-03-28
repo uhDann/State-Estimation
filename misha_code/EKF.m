@@ -21,6 +21,8 @@ function [X_Est, P_Est, GT] = EKF(out)
 % Updates @ 200Hz
 tIMU = out.Sensor_Time.time;
 
+% TODO: implement calibration functions for each sensor which can be calibrated as with the magnetometer
+
 % 3 x N
 % Updates @ 104Hz
 accelRaw = squeeze(out.Sensor_ACCEL.signals.values)';
@@ -32,7 +34,7 @@ gyroRaw  = squeeze(out.Sensor_GYRO.signals.values)';
 
 % 3 x N
 % Updates @ 50
-magRaw   = squeeze(out.Sensor_MAG.signals.values)';
+magRaw   = calibrate_magnetometer(squeeze(out.Sensor_MAG.signals.values)');
 
 % N x 4
 % Updates @ 10Hz
@@ -80,9 +82,11 @@ for k = 2:N
     
     % ToF readings (distances)
     z_tof = [ToF1(k,1); ToF2(k,1); ToF3(k,1)];
+    % TODO: implelement ToF and magnetometer data to measurement conversion
+    % z_meas_tof = ?
     
     % EKF Prediction and Update
-    [X_k, P_k] = ekf_update(X_k, P_k, omega_z, a_x, a_y, z_tof, Q, R, dt);
+    [X_k, P_k] = ekf_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof, Q, R, dt);
     
     % Store results
     X_Est_out(:, k) = X_k;

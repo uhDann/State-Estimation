@@ -1,7 +1,18 @@
-function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_tof, Q, R, dt)
-% X_k = [x, y, theta, vx, vy]
-% State transition model
-
+function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_meas_tof, Q, R, dt)
+% Parameters:
+%   X_k: 5x1 state vector
+%       Format: [x, y, theta, vx, vy]
+%   P_k: 5x5 covariance matrix
+%   omega_z: angular velocity about z-axis
+%   a_x_body: acceleration in body frame x-axis
+%   a_y_body: acceleration in body frame y-axis
+%   z_meas_tof: ToF measurements
+%   Q: process noise covariance
+%   R: measurement noise covariance
+%   dt: time step
+% Returns:
+%   X_k: updated state vector
+%   P_k: updated covariance matrix
 
 theta    = X_k(3);
 cos_th   = cos(theta);
@@ -46,7 +57,7 @@ H = [1, 0, 0, 0, 0;
     0, 0, 1, 0, 0];
 
 z_pred = H * X_k;
-y = z_tof - z_pred;
+y = z_meas_tof - z_pred;
 
 % Compute Kalman Gain
 S = H * P_k * H' + R;
