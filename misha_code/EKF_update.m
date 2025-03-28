@@ -1,27 +1,40 @@
 function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_meas_tof, Q, R, dt)
 % Parameters:
-%   X_k: 5x1 state vector
-%       Format: [x, y, theta, vx, vy]
-%   P_k: 5x5 covariance matrix
-%   omega_z: angular velocity about z-axis
-%   a_x_body: acceleration in body frame x-axis
-%   a_y_body: acceleration in body frame y-axis
-%   z_meas_tof: ToF measurements
-%   Q: process noise covariance
-%   R: measurement noise covariance
-%   dt: time step
+%   X_k: 5x1
+%       State vector. Format: [x, y, theta, vx, vy]
+%   P_k: 5x5
+%       Covariance matrix
+%   omega_z: Scalar
+%       Angular velocity about z-axis
+%   a_x_body:
+%       Acceleration in body frame x-axis
+%   a_y_body:
+%       Acceleration in body frame y-axis
+%   z_meas_tof:
+%       Measurment calculated from ToF sensors and magnetometer
+%   Q:
+%       Process noise covariance
+%   R:
+%       Measurement noise covariance
+%   dt:
+%       Time step
 % Returns:
-%   X_k: updated state vector
-%   P_k: updated covariance matrix
+%   X_k:
+%       Updated state vector
+%   P_k:
+%       Updated covariance matrix
 
 theta    = X_k(3);
 cos_th   = cos(theta);
 sin_th   = sin(theta);
 
-% a_x, a_y in the WORLD frame
+% Convert a_x, a_y to world frame
+% a_x, a_y in the world frame
 a_x_world =  cos_th * a_x_body - sin_th * a_y_body;
 a_y_world =  sin_th * a_x_body + cos_th * a_y_body;
 
+% Compute Jacobian of the state transition matrix
+% Velocities vary wrt theta
 dVx_dTheta = dt * ( -sin_th*a_x_body - cos_th*a_y_body );
 dVy_dTheta = dt * (  cos_th*a_x_body - sin_th*a_y_body );
 

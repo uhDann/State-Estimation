@@ -34,7 +34,12 @@ gyroRaw  = squeeze(out.Sensor_GYRO.signals.values)';
 
 % 3 x N
 % Updates @ 50
-magRaw   = calibrate_magnetometer(squeeze(out.Sensor_MAG.signals.values)');
+magRaw   = squeeze(out.Sensor_MAG.signals.values)';
+
+% 1 x N
+% Heading in radians for each timestep
+magCal = calibrate_magnetometer(magRaw);
+
 
 % N x 4
 % Updates @ 10Hz
@@ -81,7 +86,7 @@ for k = 2:N
     a_y = accelRaw(k, 3);
     
     % ToF readings (distances)
-    z_tof = [ToF1(k,1); ToF2(k,1); ToF3(k,1)];
+    ToF = [ToF1(k,1); ToF2(k,1); ToF3(k,1)];
     % TODO: implelement ToF and magnetometer data to measurement conversion
     % z_meas_tof = ?
     
