@@ -40,17 +40,17 @@ plot(x(1), y(1), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g');
 % End
 plot(x(end), y(end), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
 
+ToF_front = ToF(:, 1);
 ToF_left = ToF(:, 2);
 ToF_right = ToF(:, 3);
-ToF_front = ToF(:, 1);
 
 if animate
     robot_marker = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
-    heading_arrow = quiver(x(1), y(1), 0.3*cos(heading(1)), 0.3*sin(heading(1)), 0.5, 'r', 'LineWidth', 2);
+    heading_arrow = quiver(x(1), y(1), cos(heading(1)), sin(heading(1)), 'r', 'LineWidth', 2);
     
-    ToF_left = ToF(:, 1);
-    ToF_right = ToF(:, 3);
-    ToF_front = ToF(:, 2);
+    % ToF_left = ToF(:, 1);
+    % ToF_right = ToF(:, 3);
+    % ToF_front = ToF(:, 2);
     
     ToF_left_beam = quiver(x(1), y(1), ToF_left(1) * cos(heading(1) + pi/2), ToF_left(1) * sin(heading(1)+pi/2), 'b', 'LineWidth', 2);
     ToF_right_beam = quiver(x(1), y(1), ToF_right(1) * cos(heading(1) - pi/2), ToF_right(1) * sin(heading(1)-pi/2), 'b', 'LineWidth', 2);
@@ -62,7 +62,7 @@ if animate
         
         % Update heading arrow
         set(heading_arrow, 'XData', x(k), 'YData', y(k), ...
-            'UData', 0.1*cos(heading(k)), 'VData', 0.1*sin(heading(k)));
+            'UData', cos(heading(k)), 'VData', sin(heading(k)));
         
         % Update ToF beams
         set(ToF_left_beam, 'XData', x(k), 'YData', y(k), 'UData', ToF_left(k) * cos(heading(k) + pi/2), 'VData', ToF_left(k) * sin(heading(k)+pi/2));
