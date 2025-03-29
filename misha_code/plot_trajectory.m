@@ -40,17 +40,13 @@ plot(x(1), y(1), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g');
 % End
 plot(x(end), y(end), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
 
-ToF_front = ToF(:, 1);
-ToF_left = ToF(:, 2);
+ToF_left = ToF(:, 1);
 ToF_right = ToF(:, 3);
+ToF_front = ToF(:, 2);
 
 if animate
     robot_marker = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
     heading_arrow = quiver(x(1), y(1), cos(heading(1)), sin(heading(1)), 'r', 'LineWidth', 2);
-    
-    % ToF_left = ToF(:, 1);
-    % ToF_right = ToF(:, 3);
-    % ToF_front = ToF(:, 2);
     
     ToF_left_beam = quiver(x(1), y(1), ToF_left(1) * cos(heading(1) + pi/2), ToF_left(1) * sin(heading(1)+pi/2), 'b', 'LineWidth', 2);
     ToF_right_beam = quiver(x(1), y(1), ToF_right(1) * cos(heading(1) - pi/2), ToF_right(1) * sin(heading(1)-pi/2), 'b', 'LineWidth', 2);

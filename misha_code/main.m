@@ -1,9 +1,9 @@
 clear; clc;
 % out = load("../trainingData/calib1_rotate.mat").out;
 load("../trainingData/calib2_straight.mat")
-% load("trainingData/task1_1.mat")
+% load("../trainingData/task2_1.mat")
 % load("trainingData/task1_2.mat")
-% load("trainingData/task1_3.mat")
+% load("../trainingData/task1_3.mat")
 % load("trainingData/task1_4.mat")
 % load("trainingData/task1_5.mat")
 
@@ -33,7 +33,7 @@ ToF1     = out.Sensor_ToF1.signals.values;
 ToF2     = out.Sensor_ToF2.signals.values;
 ToF3     = out.Sensor_ToF3.signals.values;
 
-all_ToF = [-ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)];
+all_ToF = [ToF1(:, 1), -ToF2(:, 1), ToF3(:, 1)];
 
 % N x 1
 gt_time = out.GT_time.time;
