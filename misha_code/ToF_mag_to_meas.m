@@ -11,6 +11,9 @@ function z_meas_tof = ToF_mag_to_meas(ToF_centre, mag_theta)
 %   z_meas_tof: Nx3
 %       Measurement data [x, y, theta]
 
+% Room size
+L = 2.4;
+
 z_meas_tof = zeros(size(ToF_centre, 1), 3);
 % Convert ToF data and magentometer heading to [x, y, theta]
 
@@ -19,7 +22,7 @@ d_l = ToF_centre(2, :);
 d_r = ToF_centre(3, :);
 
 % Compute x and y position based on ToF and heading
-x = (L/2 - d_r * cos(mag_theta)) - (L/2 - d_l * cos(mag_theta));
+x = 0.5 * (d_l - d_r) * cos(theta);
 y = L/2 - d_c * cos(mag_theta);
 
 z_meas_tof(1, :) = x;
