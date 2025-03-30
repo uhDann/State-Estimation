@@ -98,7 +98,7 @@ R = diag([0.01, 0.01, 0.1]); % Measurement noise for ToF
 
 prevTime = tIMU(1);
 
-z_meas_tof = [ToF_mag_to_meas(smoothed_ToF, mag_heading), mag_heading];
+z_meas_tof = [ToF_mag_to_meas(smoothed_ToF, yaw_est), yaw_est];
 
 for k = 2:N
     currentTime = tIMU(k);

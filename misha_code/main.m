@@ -1,7 +1,7 @@
 clear; clc;
 % load("../trainingData/calib1_rotate.mat");
-% load("../trainingData/calib2_straight.mat")
-load("../trainingData/task2_1.mat")
+load("../trainingData/calib2_straight.mat")
+% load("../trainingData/task2_1.mat")
 % load("trainingData/task1_2.mat")
 % load("../trainingData/task1_3.mat")
 % load("trainingData/task1_4.mat")
