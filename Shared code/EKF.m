@@ -54,7 +54,7 @@ ToF1 = out.Sensor_ToF1.signals.values;
 ToF2 = out.Sensor_ToF2.signals.values;
 ToF3 = out.Sensor_ToF3.signals.values;
 
-all_ToF = [ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)];
+all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 
 % Smooth ToF data
 % Preallocate the smoothed result
