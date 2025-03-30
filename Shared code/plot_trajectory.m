@@ -30,7 +30,7 @@ ylabel('Y Position (m)');
 title('Robot Trajectory');
 xlim([-L/2 - 0.1, L/2 + 0.1]);
 ylim([-L/2 - 0.1, L/2 + 0.1]);
-plot(x, y, 'b-', 'LineWidth', 1.5);
+plot(x, y, 'b.', 'LineWidth', 1.5);
 
 % Plot room boundaries
 plot([-L/2, -L/2, L/2, L/2, -L/2], [-L/2, L/2, L/2, -L/2, -L/2], 'k-', 'LineWidth', 1.5);

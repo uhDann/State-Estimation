@@ -12,7 +12,7 @@ ToF3 = out.Sensor_ToF3.signals.values;
 GT_position = squeeze(out.GT_position.signals.values);
 GT_rotation = squeeze(out.GT_rotation.signals.values);
 
-heading = quat2eul(GT_rotation, 'ZYX'); 
+heading = quat2eul(GT_rotation, 'ZYX');
 heading = unwrap(heading(:,1));
 
 find_ToF_offsets([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)], GT_position, heading);

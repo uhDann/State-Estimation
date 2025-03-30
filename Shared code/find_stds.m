@@ -1,23 +1,11 @@
-function [X_Est, P_Est, GT] = EKF(out)
-% [X_Est, P_Est, GT] = myEKF(out)
-% Parameters:
-%   out
-%     struct with fields:
-%     .Sensor_Time
-%     .Sensor_ACCEL,
-%     .Sensor_GYRO,
-%     .Sensor_MAG
-%     .Sensor_ToF1, .Sensor_ToF2, .Sensor_ToF3  (distance, status, etc.)
-%     .GT_time, .GT_position, .GT_rotation
-% Returns:
-%   X_Est
-%     Array of state estiamtes
-%   P_Est
-%     Array of covariance matrices
-%   GT
-%     ground-truth state
-
-%% Load data
+clear; clc;
+load("../trainingData/calib1_rotate.mat");
+% load("../trainingData/calib2_straight.mat")
+% load("../trainingData/task2_1.mat")
+% load("trainingData/task1_2.mat")
+% load("../trainingData/task1_3.mat")
+% load("trainingData/task1_4.mat")
+% load("trainingData/task1_5.mat")
 
 % N x 1
 % Updates @ 200Hz
@@ -81,37 +69,8 @@ dt = 200;
 
 z_meas_tof = [ToF_mag_to_meas(all_ToF, mag_yaw), mag_yaw];
 
-% Initial state (assume first GT position is accurate)
-% [x, y, theta, vx, vy]
-X_k = [z_meas_tof(1, 1), z_meas_tof(1, 2), mag_yaw(1), 0, 0]';
-% Evaluation showed that RMSE of magnetometer heading is 0.28
-P_k = diag([0.1, 0.1, 0.28, 0.01, 0.01]);
+sigma_error_x = std(z_meas_tof(:, 1) - gt_pos(:, 1));
+sigma_error_y = std(z_meas_tof(:, 2) - gt_pos(:, 2));
+disp("Standard deviation of error in x: " + sigma_error_x);
+disp("Standard deviation of error in y: " + sigma_error_y);
 
-% Process noise covariance
-Q = diag([0.1, 0.1, 0.17, 0.1, 0.1]);
-% Standard deviation of
-R = diag([0.17, 0.18, 0.1]);
-
-
-for k = 2:N
-    currentTime = tIMU(k);
-    prevTime = currentTime;
-    
-    % Get sensor measurements
-    % Z in global frame
-    omega_z = gyro_calibrated(k, 1);
-    a_x = accel_calibrated(k, 1);
-    a_y = accel_calibrated(k, 2);
-    
-    % EKF Prediction and Update
-    [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, dt);
-    
-    % Store results
-    X_Est_out(:, k) = X_k;
-    P_Est_out{k} = P_k;
-end
-
-GT = [gt_time, gt_pos, gt_quat];
-X_Est = X_Est_out.';
-P_Est = P_Est_out;
-end
