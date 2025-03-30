@@ -47,6 +47,10 @@ mag_xy_raw = mag_raw(:, 2:3);
 modelPath = "NNMagCal_2D.mat";
 [yaw_est, mag_heading] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
 
+windowSize = 50;
+smoothed_yaw = smoothdata(yaw_est, 'movmean', windowSize);
+
+
 % N x 4
 % Updates @ 10Hz
 % [dist, ambient, signal, status]
@@ -62,7 +66,7 @@ all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 % Preallocate the smoothed result
 smoothed_ToF = zeros(size(all_ToF));
 
-windowSize = 100;
+windowSize = 1000;
 % Process each column independently.
 for col = 1:3
     smoothed_ToF(:,col) = smoothdata(all_ToF(:,col), 'movmean', windowSize);
