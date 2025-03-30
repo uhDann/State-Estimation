@@ -58,16 +58,6 @@ ToF3 = out.Sensor_ToF3.signals.values;
 
 all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 
-% Smooth ToF data
-% Preallocate the smoothed result
-smoothed_ToF = zeros(size(all_ToF));
-
-windowSize = 100;
-% Process each column independently.
-for col = 1:3
-    smoothed_ToF(:,col) = smoothdata(all_ToF(:,col), 'movmean', windowSize);
-end
-
 % Extract ground truth data
 % N x 1
 gt_time = out.GT_time.time;
@@ -98,7 +88,7 @@ R = diag([0.01, 0.01, 0.1]); % Measurement noise for ToF
 
 prevTime = tIMU(1);
 
-z_meas_tof = [ToF_mag_to_meas(smoothed_ToF, yaw_est), yaw_est];
+z_meas_tof = [ToF_mag_to_meas(all_ToF, yaw_est), yaw_est];
 
 for k = 2:N
     currentTime = tIMU(k);

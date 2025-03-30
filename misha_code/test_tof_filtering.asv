@@ -1,0 +1,112 @@
+clear; clc;
+% load("../trainingData/calib1_rotate.mat");
+% load("../trainingData/calib2_straight.mat")
+load("../trainingData/task2_1.mat")
+% load("trainingData/task1_2.mat")
+% load("../trainingData/task1_3.mat")
+% load("trainingData/task1_4.mat")
+% load("trainingData/task1_5.mat")
+
+GT_Time = out.Sensor_Time.time;
+
+GT_position = squeeze(out.GT_position.signals.values);
+GT_rotation = squeeze(out.GT_rotation.signals.values);
+
+GT_heading = quat2eul(GT_rotation, 'ZYX');
+GT_heading = unwrap(GT_heading(:,1));
+
+ToF1 = out.Sensor_ToF1.signals.values;
+ToF2 = out.Sensor_ToF2.signals.values;
+ToF3 = out.Sensor_ToF3.signals.values;
+
+all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
+pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
+
+predicted_ToF = zeros((size(GT_Time, 1), 3);
+for i = 1:size(GT_position, 1)
+    predicted_ToF(i, 1) = predictedDistance(GT_position(i, 1), GT_position(i, 2), GT_heading(i)+pi/2, 2.4);
+    predicted_ToF(i, 2) = predictedDistance(GT_position(i, 1), GT_position(i, 2), GT_heading(i)+pi, 2.4);
+    predicted_ToF(i, 3) = predictedDistance(GT_position(i, 1), GT_position(i, 2), GT_heading(i)-pi/2, 2.4);
+end
+
+plot_trajectory(GT_Time, pos_est, GT_heading, all_ToF, false);
+
+%%%%%%%
+% figure;
+% hold on;
+% plot(pos_est(:, 1), pos_est(:, 2));
+% plot(GT_position(:, 1), GT_position(:, 2));
+
+%%%%%%%
+figure;
+plot(GT_Time, all_ToF(:, 1), "LineWidth", 1.5);
+hold on;
+plot(GT_Time, all_ToF(:, 2), "LineWidth", 1.5);
+plot(GT_Time, all_ToF(:, 3), "LineWidth", 1.5);
+plot(GT_Time, predicted_ToF(:, 1), "LineWidth", 1.5, "LineStyle", "--");
+plot(GT_Time, predicted_ToF(:, 2), "LineWidth", 1.5, "LineStyle", "--");
+plot(GT_Time, predicted_ToF(:, 3), "LineWidth", 1.5, "LineStyle", "--");
+legend("Left", "Centre", "Right", "Predicted Left", "Predicted Centre", "Predicted Right");
+hold off;
+
+N = size(all_ToF, 1);
+Fs = 200;
+f = Fs * (0:(N/2)) / N;
+fft_ToF = fft(all_ToF(:, 1));
+fft_ToF = abs(fft_ToF/N);
+fft_ToF = fft_ToF(1:N/2+1);
+fft_ToF(2:end-1) = 2 * fft_ToF(2:end-1);
+
+figure;
+plot(f, abs(fft_ToF));
+ylim([0, 1e-3]);
+
+
+function d = predictedDistance(x, y, phi, L)
+% Computes the distance from point (x,y) along the direction phi to the first wall encountered in square room with side lengths L.
+% Parameters:
+%   x: double
+%       x-coordinate of the point
+%   y: double
+%       y-coordinate of the point
+%   phi: double
+%       direction angle in radians
+%   L: double
+%       room side length
+% Returns:
+%   d: double
+%       distance to the wall
+
+% Tolerance for near-zero
+tol = 1e-6;
+
+% Vertical wall candidate
+if abs(cos(phi)) > tol
+    % Determine which vertical wall is hit based on the direction
+    wall_x = sign(cos(phi)) * (L/2);
+    d_x = (wall_x - x) / cos(phi);
+else
+    d_x = inf;
+end
+
+% Horizontal wall candidate
+if abs(sin(phi)) > tol
+    % Determine which horizontal wall is hit
+    wall_y = sign(sin(phi)) * (L/2);
+    d_y = (wall_y - y) / sin(phi);
+else
+    d_y = inf;
+end
+
+% Only consider positive distances
+if d_x <= 0
+    d_x = inf;
+end
+if d_y <= 0
+    d_y = inf;
+end
+
+% Predicted distance is the minimum positive candidate
+d = min(d_x, d_y);
+
+end
