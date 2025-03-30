@@ -42,8 +42,10 @@ mag_xy_raw = mag_raw(:, 2:3);
 
 % N x 1
 % Heading in radians for each timestep
-calParams = load("MAG_calParams.mat").calParams;
-mag_heading = calibrate_magnetometer(mag_xy_raw, calParams);
+% calParams = load("MAG_calParams.mat").calParams;
+% mag_heading = calibrate_magnetometer(mag_xy_raw, calParams);
+modelPath = "NNMagCal_2D.mat";
+[yaw_est, mag_heading] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
 
 % N x 4
 % Updates @ 10Hz
@@ -96,7 +98,7 @@ R = diag([0.01, 0.01, 0.1]); % Measurement noise for ToF
 
 prevTime = tIMU(1);
 
-z_meas_tof = [ToF_mag_to_meas(smoothed_ToF, mag_heading), mag_heading];
+z_meas_tof = [ToF_mag_to_meas(smoothed_ToF, yaw_est), yaw_est];
 
 for k = 2:N
     currentTime = tIMU(k);
