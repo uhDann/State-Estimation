@@ -1,4 +1,6 @@
-function [mag_heading]= applyMagnetometerCalibration2D(mag_xy_raw, calParams)
+function [mag_heading]= applyMagnetometerCalibration(mag_xy_raw, calParams_path)
+load(calParams_path);
+
 % Unpack the struct
 mu          = calParams.mu;
 sigma       = calParams.sigma;
