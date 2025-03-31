@@ -1,4 +1,4 @@
-function plot_trajectory(time, pos, heading, ToF, animate)
+function plot_trajectory(time, GT_position, pos, heading, ToF, animate)
 % Plots the 2D trajectory of the robot
 %
 % Parameters:
@@ -31,6 +31,7 @@ title('Robot Trajectory');
 xlim([-L/2 - 0.1, L/2 + 0.1]);
 ylim([-L/2 - 0.1, L/2 + 0.1]);
 plot(x, y, 'b.', 'LineWidth', 1.5);
+plot(GT_position(:,1), GT_position(:,2), 'LineWidth', 1.5, 'LineStyle', '--', 'Color', 'k')
 
 % Plot room boundaries
 plot([-L/2, -L/2, L/2, L/2, -L/2], [-L/2, L/2, L/2, -L/2, -L/2], 'k-', 'LineWidth', 1.5);
