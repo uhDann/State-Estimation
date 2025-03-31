@@ -80,7 +80,7 @@ N = length(tIMU);
 X_Est_out = zeros(5, N);
 P_Est_out = cell(N, 1);
 
-dt = 1/200;
+dt = 1/104;
 
 z_meas_tof = [ToF_mag_to_meas(all_ToF, mag_yaw), mag_yaw];
 
@@ -98,17 +98,14 @@ R = diag([0.17, 0.18, 0.1].^2);
 X_Est_out(:, 1) = X_k;
 
 for k = 2:N
-    currentTime = tIMU(k);
-    prevTime = currentTime;
-    
     % Get sensor measurements
     % Z in global frame
     omega_z = gyro_calibrated(k, 1);
     a_x = accel_calibrated(k, 1);
     a_y = accel_calibrated(k, 2);
-    
+
     % EKF Prediction and Update
-    [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, dt);
+    [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, true, dt);
     
     % Store results
     X_Est_out(:, k) = X_k;

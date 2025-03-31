@@ -1,4 +1,4 @@
-function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_meas_tof, Q, R, dt)
+function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_meas_tof, Q, R, should_correct, dt)
 % Parameters:
 %   X_k: 5x1
 %       State vector. Format: [x, y, theta, vx, vy]
@@ -16,6 +16,8 @@ function [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x_body, a_y_body, z_meas_t
 %       Process noise covariance
 %   R:
 %       Measurement noise covariance
+%   should_correct:
+%       Boolean to decide whether to do the update step
 %   dt:
 %       Time step
 % Returns:
@@ -62,21 +64,24 @@ X_k(5) = X_k(5) + a_y_world * dt;
 % Predict covariance
 P_k = F * P_k * F' + Q;
 
-% Measurement update
-% Assume z_meas = [x, y, theta].
-% H picks out x, y, theta from the 5D state:
-H = [1, 0, 0, 0, 0;
-    0, 1, 0, 0, 0;
-    0, 0, 1, 0, 0];
+if should_correct
+    % Measurement update
+    % Assume z_meas = [x, y, theta].
+    % H picks out x, y, theta from the 5D state:
+    H = [1, 0, 0, 0, 0;
+        0, 1, 0, 0, 0;
+        0, 0, 1, 0, 0];
+    
+    z_pred = H * X_k;
+    y = z_meas_tof - z_pred;
+    
+    % Compute Kalman Gain
+    S = H * P_k * H' + R;
+    K = P_k * H' / S;
+    
+    % Update step
+    X_k = X_k + 0*K * y;
+    P_k = (eye(5) - K * H) * P_k;
+end
 
-z_pred = H * X_k;
-y = z_meas_tof - z_pred;
-
-% Compute Kalman Gain
-S = H * P_k * H' + R;
-K = P_k * H' / S;
-
-% Update step
-X_k = X_k + K * y;
-P_k = (eye(5) - K * H) * P_k;
 end
