@@ -13,10 +13,6 @@ function [RMSE, metrics] = evaluateTrajectory(X_est, out)
 
     %Extracting the estimation
     N = length(GT_Time);
-    % Basic manual RMSE for debugging
-    pos_error = sqrt(sum((GT_position(:,1:2) - X_est(:,1:2)).^2, 2));
-    RMSE_manual = sqrt(mean(pos_error.^2));
-    fprintf('Manual RMSE (XY): %.4f m\n', RMSE_manual);
 
     for i = 1:N
 
