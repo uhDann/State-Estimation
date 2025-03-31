@@ -31,3 +31,6 @@ pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
 % plot_trajectory(GT_Time, pos_est, GT_heading, all_ToF, true);
 
 [RMSE, metrics] = evaluateTrajectory(X_est, out);
+
+figure;
+plot(metrics.AbsoluteError)
