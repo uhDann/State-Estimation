@@ -77,7 +77,7 @@ N = length(tIMU);
 X_Est_out = zeros(5, N);
 P_Est_out = cell(N, 1);
 
-dt = 200;
+dt = 1/200;
 
 z_meas_tof = [ToF_mag_to_meas(all_ToF, mag_yaw), mag_yaw];
 
