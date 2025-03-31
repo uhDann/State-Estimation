@@ -2,7 +2,7 @@
 clear; clc;
 % load("../trainingData/calib1_rotate.mat");
 % load("../trainingData/calib2_straight.mat")
-load("../trainingData/task2_1.mat")
+load("../trainingData/task2_3.mat")
 
 GT_Time = out.Sensor_Time.time;
 

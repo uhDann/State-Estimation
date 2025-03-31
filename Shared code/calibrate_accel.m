@@ -14,8 +14,8 @@ w2 = var1 ./ (var1 + var2);
 % Fuse each axis individually
 accel_fused = w1 .* accel1 + w2 .* accel2;
 
-accel_filtered = zero_phase_smooth(accel_fused, 4, 2, 104);
-[bh, ah] = butter(4, 0.045/(104/2), 'high');
+accel_filtered = zero_phase_smooth(accel_fused, 4, 2, 200);
+[bh, ah] = butter(4, 0.045/(200/2), 'high');
 
 % Apply zero-phase high-pass filtering
 accel_filtered = filtfilt(bh, ah, accel_filtered);

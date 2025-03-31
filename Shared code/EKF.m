@@ -95,7 +95,7 @@ N = length(tIMU);
 X_Est_out = zeros(5, N);
 P_Est_out = cell(N, 1);
 
-dt = 1/104;
+dt = 1/200;
 
 z_meas_tof = [remove_outliers(ToF_mag_to_meas(all_ToF, mag_yaw), 650), mag_yaw];
 
