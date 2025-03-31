@@ -59,7 +59,7 @@ ToF1 = out.Sensor_ToF1.signals.values;
 ToF2 = out.Sensor_ToF2.signals.values;
 ToF3 = out.Sensor_ToF3.signals.values;
 
-all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
+all_ToF = remove_outliers(calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]), 500);
 
 % Extract ground truth data
 % N x 1
@@ -82,7 +82,7 @@ P_Est_out = cell(N, 1);
 
 dt = 1/104;
 
-z_meas_tof = [ToF_mag_to_meas(all_ToF, mag_yaw), mag_yaw];
+z_meas_tof = [remove_outliers(ToF_mag_to_meas(all_ToF, mag_yaw), 650), mag_yaw];
 
 % Initial state (assume first GT position is accurate)
 % [x, y, theta, vx, vy]
@@ -103,7 +103,7 @@ for k = 2:N
     omega_z = gyro_calibrated(k, 1);
     a_x = accel_calibrated(k, 1);
     a_y = accel_calibrated(k, 2);
-
+    
     % EKF Prediction and Update
     [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, true, dt);
     
