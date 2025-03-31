@@ -51,13 +51,13 @@ mag_xy_raw = interpolate_sensor(mag_xy_raw, 200, 50);
 % N x 1
 % Heading in radians for each timestep
 % calParams = load("MAG_calParams.mat").calParams;
-% modelPath = "NNMagCal_2D.mat";
-% [mag_yaw, ~] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
+modelPath = "NNMagCal_2D.mat";
+[mag_yaw, ~] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
 
 % modelPath = "MAG_calParams.mat";
 % mag_yaw = applyMagnetometerCalibration(mag_xy_raw, modelPath);
 
-mag_yaw = unwrap(atan2(mag_xy_raw(:, 2), mag_xy_raw(:, 1)));
+% mag_yaw = unwrap(atan2(mag_xy_raw(:, 2), mag_xy_raw(:, 1)));
 
 mag_yaw = zero_phase_smooth(mag_yaw, 4, 0.5, 50);
 
