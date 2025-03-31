@@ -46,6 +46,10 @@ mag_xy_raw = mag_raw(:, 2:3);
 % calParams = load("MAG_calParams.mat").calParams;
 modelPath = "NNMagCal_2D.mat";
 [mag_yaw, ~] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
+mag_yaw = zero_phase_smooth(mag_yaw, 4, 5, 50);
+
+figure;
+plot(tIMU, mag_yaw)
 
 % N x 4
 % Updates @ 10Hz
@@ -88,9 +92,9 @@ X_k = [z_meas_tof(1, 1), z_meas_tof(1, 2), mag_yaw(1), 0, 0]';
 P_k = diag([0.1, 0.1, 0.28, 0.01, 0.01]);
 
 % Process noise covariance
-Q = diag([0.1, 0.1, 0.17, 0.1, 0.1]);
+Q = diag([0.1, 0.1, 0.17, 0.1, 0.1]*0.1);
 % Standard deviation of
-R = diag([0.17, 0.18, 0.1]);
+R = diag([0.17*0.17, 0.18*0.18, 0.1*0.1]);
 
 
 for k = 2:N

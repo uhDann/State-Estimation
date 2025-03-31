@@ -1,5 +1,5 @@
 clear; clc; clear figure
-load("../trainingData/calib2_straight.mat")
+load("../trainingData/calib1_rotate.mat")
 GT_Time = out.Sensor_Time.time;
 
 gyro = squeeze(out.Sensor_GYRO.signals.values)';
@@ -30,7 +30,7 @@ accel_fused = w1 .* accel1 + w2 .* accel2;
 
 accel_filtered = zero_phase_smooth(accel_fused, 4, 2, 104);
 
-gyro_filtered = zero_phase_smooth(gyro, 4, 5, 104);
+gyro_filtered = zero_phase_smooth(gyro, 4, 2, 104);
 
 % Plot filtered signals
 figure;
