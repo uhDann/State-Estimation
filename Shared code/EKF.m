@@ -108,7 +108,9 @@ for k = 2:N
     a_y = accel_calibrated(k, 2);
     
     % EKF Prediction and Update
-    [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, dt);
+    % [X_k, P_k] = EKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, dt);
+
+    [X_k, P_k] = UKF_update(X_k, P_k, omega_z, a_x, a_y, z_meas_tof(k, :)', Q, R, dt);
     
     % Store results
     X_Est_out(:, k) = X_k;

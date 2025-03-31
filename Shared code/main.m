@@ -25,12 +25,12 @@ all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 
 [X_est, P_Est, GT] = EKF(out);
 % X_est = zero_phase_smooth(X_est, 4, 0.5, 200);
-% plot_trajectory(GT_Time, GT_position, X_est(:, 1:2), X_est(:, 3), all_ToF, true);
+plot_trajectory(GT_Time, GT_position, X_est(:, 1:2), X_est(:, 3), all_ToF, true);
 
 pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
 % plot_trajectory(GT_Time, pos_est, GT_heading, all_ToF, true);
 
-% [RMSE, metrics] = evaluateTrajectory(X_est, out);
+[RMSE, metrics] = evaluateTrajectory(X_est, out);
 
 plot_var_xy = 2;
 

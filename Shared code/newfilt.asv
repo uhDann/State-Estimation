@@ -1,5 +1,5 @@
 clear; clc; clear figure
-load("../trainingData/calib1_rotate.mat")
+load("../trainingData/task2_3.mat")
 GT_Time = out.Sensor_Time.time;
 
 gyro = squeeze(out.Sensor_GYRO.signals.values)';
@@ -8,8 +8,8 @@ accel1 = squeeze(out.Sensor_ACCEL.signals.values)';
 accel2 = squeeze(out.Sensor_LP_ACCEL.signals.values)';
 
 % Subtracting the mean to ensure centering
-accel1 = (accel1(:,2:3))-mean(accel1(10:end,2:3));
-accel2 = accel2(:,[1,3])-mean(accel2(10:end,[1,3]));
+accel1 = (accel1(:,2:3))-mean(accel1(10:200,2:3));
+accel2 = accel2(:,[1,3])-mean(accel2(10:200,[1,3]));
 
 % figure;
 % plot(GT_Time, accel2); hold on;
@@ -18,8 +18,8 @@ accel2 = accel2(:,[1,3])-mean(accel2(10:end,[1,3]));
 % xlabel('Time (s)')
 % ylabel('Acceleration (m/s^2)')
 % legend("X", 'Y', "X", 'Y')
-% var1 = var(accel1);
-% var2 = var(accel2);
+var1 = var(accel1);
+var2 = var(accel2);
 
 % Calculate weights (element-wise, axis by axis)
 w1 = var2 ./ (var1 + var2);
@@ -28,27 +28,14 @@ w2 = var1 ./ (var1 + var2);
 % Fuse each axis individually
 accel_fused = w1 .* accel1 + w2 .* accel2;
 
-% Sampling rate estimation
-Fs = 104; 
-N = length(GT_Time); 
-f = Fs * (0:(N/2)) / N; % Frequency vector
+accel_filtered = zero_phase_smooth(accel_fused, 4, 2, 104);
 
-% Design low-pass Butterworth filter
-cutoff = 5; % Adjust based on FFT result (e.g., 5 Hz)
-order = 4;
-[b, a] = butter(order, cutoff/(Fs/2), 'low');
-
-% Filter accelerometer and gyro data
-accel_filtered = filtfilt(b, a, accel_fused);
-gyro_filtered = filtfilt(b, a, gyro);
-
-% accel_filtered = zero_phase_smooth(accel, 4, 5, 104);
-% gyro_filtered = zero_phase_smooth(gyro, 4, 5, 104);
+gyro_filtered = zero_phase_smooth(gyro, 4, 2, 104);
 
 % Plot filtered signals
 figure;
 subplot(2,1,1)
-plot(GT_Time, accel_filtered(:,1:3))
+plot(GT_Time, accel_filtered)
 title('Filtered Accelerometer Data')
 xlabel('Time (s)')
 ylabel('Acceleration (m/s^2)')
@@ -61,7 +48,6 @@ xlabel('Time (s)')
 ylabel('Angular Velocity (rad/s)')
 legend('Z')
 
-dt = 1 / Fs; % or use diff(GT_Time) if non-uniform
 time = GT_Time;
 
 % Integrate Z-axis angular velocity to get rotation angle (in radians)
@@ -77,15 +63,26 @@ title('Cumulative Rotation Around Z-Axis')
 xlabel('Time (s)')
 ylabel('Rotation (°)')
 grid on
+[bh, ah] = butter(4, 0.0/(104/2), 'high');
+
+% Apply zero-phase high-pass filtering
+accel_filtered = filtfilt(bh, ah, accel_filtered);
 
 velocity = cumtrapz(GT_Time, accel_filtered); 
 velocity = velocity - mean(velocity(10:100,:)); 
+% displacement = cumtrapz(GT_Time, velocity);
+
+% [bh, ah] = butter(4, 0.01/(104/2), 'high');
+% 
+% % Apply zero-phase high-pass filtering
+% velocity_hp = filter(bh, ah, velocity);
 displacement = cumtrapz(GT_Time, velocity);
+
 GT_position = squeeze(out.GT_position.signals.values);
 
 figure;
-plot(GT_Time, displacement(:, 2:3)); hold on;
-plot(GT_Time, GT_position(:, 2:3), 'LineWidth', 3, 'Marker','.')
+plot(GT_Time, displacement); hold on;
+plot(GT_Time, GT_position(:, 1:2), 'LineWidth', 3, 'Marker','.')
 legend('X', 'Y', 'X-GT', 'Y-GT')
 xlabel('Time (s)')
 ylabel('Displacement (m)')

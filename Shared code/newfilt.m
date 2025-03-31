@@ -1,5 +1,5 @@
 clear; clc; clear figure
-load("../trainingData/calib1_rotate.mat")
+load("../trainingData/task2_3.mat")
 GT_Time = out.Sensor_Time.time;
 
 gyro = squeeze(out.Sensor_GYRO.signals.values)';
@@ -63,16 +63,20 @@ title('Cumulative Rotation Around Z-Axis')
 xlabel('Time (s)')
 ylabel('Rotation (°)')
 grid on
+[bh, ah] = butter(4, 0.045/(104/2), 'high');
+
+% Apply zero-phase high-pass filtering
+accel_filtered = filtfilt(bh, ah, accel_filtered);
 
 velocity = cumtrapz(GT_Time, accel_filtered); 
 velocity = velocity - mean(velocity(10:100,:)); 
 % displacement = cumtrapz(GT_Time, velocity);
 
-[bh, ah] = butter(4, 0.05/(104/2), 'high');
-
-% Apply zero-phase high-pass filtering
-velocity_hp = filtfilt(bh, ah, velocity);
-displacement = cumtrapz(GT_Time, velocity_hp);
+% [bh, ah] = butter(4, 0.01/(104/2), 'high');
+% 
+% % Apply zero-phase high-pass filtering
+% velocity_hp = filter(bh, ah, velocity);
+displacement = cumtrapz(GT_Time, velocity);
 
 GT_position = squeeze(out.GT_position.signals.values);
 
