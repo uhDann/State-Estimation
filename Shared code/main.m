@@ -1,3 +1,4 @@
+%% Loading data
 clear; clc;
 % load("../trainingData/calib1_rotate.mat");
 % load("../trainingData/calib2_straight.mat")
@@ -21,19 +22,15 @@ ToF3 = out.Sensor_ToF3.signals.values;
 
 all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 
-% plot_trajectory(GT_Time, GT_position, GT_heading, all_ToF, true)
-
+%% EKF
 [X_est, P_Est, GT] = EKF(out);
-% X_est = remove_outliers(X_est, 20);
-
 X_est(:, 1:2) = zero_phase_smooth(X_est(:, 1:2), 4, 0.6, 200);
-plot_trajectory(GT_Time, GT_position, X_est(:, 1:2), X_est(:, 3), all_ToF, false);
 
-pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
-% plot_trajectory(GT_Time, pos_est, GT_heading, all_ToF, true);
+plot_trajectory(GT_Time, GT_position, X_est(:, 1:2), X_est(:, 3), all_ToF, false);
 
 [RMSE, metrics] = evaluateTrajectory(X_est, out);
 
+%% Plotting
 plot_var_xy = 2;
 
 figure;

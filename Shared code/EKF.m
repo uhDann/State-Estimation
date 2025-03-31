@@ -26,12 +26,18 @@ tIMU = out.Sensor_Time.time;
 % N x 3
 % Updates @ 104Hz
 accel_raw = squeeze(out.Sensor_ACCEL.signals.values)';
+accel_raw = interpolate_sensor(accel_raw, 200, 104);
+
 accel_LP_raw = squeeze(out.Sensor_LP_ACCEL.signals.values)';
+accel_LP_raw = interpolate_sensor(accel_LP_raw, 200, 100);
+
 accel_calibrated = calibrate_accel(accel_raw, accel_LP_raw);
 
 % N x 3
 % Updates @ 104Hz
 gyro_raw = squeeze(out.Sensor_GYRO.signals.values)';
+gyro_raw = interpolate_sensor(gyro_raw, 200, 104);
+
 gyro_calibrated = calibrate_gyro(gyro_raw);
 
 % N x 3
@@ -40,14 +46,13 @@ mag_raw = squeeze(out.Sensor_MAG.signals.values)';
 % N x 2
 % WARN: magnetometer xy is columns 2 and 3
 mag_xy_raw = mag_raw(:, 2:3);
+mag_xy_raw = interpolate_sensor(mag_xy_raw, 200, 50);
 
 % N x 1
 % Heading in radians for each timestep
 % calParams = load("MAG_calParams.mat").calParams;
 modelPath = "NNMagCal_2D.mat";
 [mag_yaw, ~] = applyNNMagnetometerCalibration(mag_xy_raw, modelPath);
-
-% TODO: Check if this is way too harsh?
 mag_yaw = zero_phase_smooth(mag_yaw, 4, 0.5, 50);
 
 % N x 4
@@ -58,6 +63,10 @@ mag_yaw = zero_phase_smooth(mag_yaw, 4, 0.5, 50);
 ToF1 = out.Sensor_ToF1.signals.values;
 ToF2 = out.Sensor_ToF2.signals.values;
 ToF3 = out.Sensor_ToF3.signals.values;
+
+ToF1 = interpolate_sensor(ToF1, 200, 10);
+ToF2 = interpolate_sensor(ToF2, 200, 10);
+ToF3 = interpolate_sensor(ToF3, 200, 10);
 
 all_ToF = remove_outliers(calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]), 500);
 
