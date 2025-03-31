@@ -20,6 +20,9 @@ ToF2 = out.Sensor_ToF2.signals.values;
 ToF3 = out.Sensor_ToF3.signals.values;
 
 all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
-pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
+all_ToF = remove_outliers(all_ToF, 500);
 
-plot_trajectory(GT_Time, pos_est, GT_heading, all_ToF, false);
+pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
+pos_est = remove_outliers(pos_est, 800);
+
+plot_trajectory(GT_Time, GT_position, pos_est, GT_heading, all_ToF, false);

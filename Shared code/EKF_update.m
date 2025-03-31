@@ -80,7 +80,7 @@ if should_correct
     K = P_k * H' / S;
     
     % Update step
-    X_k = X_k + 0*K * y;
+    X_k = X_k + K * y;
     P_k = (eye(5) - K * H) * P_k;
 end
 
