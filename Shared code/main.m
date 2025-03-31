@@ -1,7 +1,7 @@
 clear; clc;
 % load("../trainingData/calib1_rotate.mat");
 % load("../trainingData/calib2_straight.mat")
-load("../trainingData/task1_3.mat")
+load("../trainingData/task2_3.mat")
 % load("trainingData/task1_2.mat")
 % load("../trainingData/task1_3.mat")
 % load("trainingData/task1_4.mat")
@@ -24,7 +24,7 @@ all_ToF = calibrate_ToF([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)]);
 % plot_trajectory(GT_Time, GT_position, GT_heading, all_ToF, true)
 
 [X_est, P_Est, GT] = EKF(out);
-X_est = zero_phase_smooth(X_est, 4, 0.5, 200);
+% X_est = zero_phase_smooth(X_est, 4, 0.5, 200);
 plot_trajectory(GT_Time, X_est(:, 1:2), X_est(:, 3), all_ToF, true);
 
 pos_est = ToF_mag_to_meas(all_ToF, GT_heading);
