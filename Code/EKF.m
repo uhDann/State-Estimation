@@ -70,8 +70,8 @@ modelPath = "NNMagCal_2D.mat";
 
 mag_yaw = zero_phase_smooth(mag_yaw, 4, 0.5, 50);
 
-yaw = mag_yaw;
-% yaw = gyro_yaw;
+% yaw = mag_yaw;
+yaw = gyro_yaw;
 
 % N x 4
 % Updates @ 10Hz
