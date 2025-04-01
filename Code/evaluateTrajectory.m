@@ -1,4 +1,4 @@
-function [RMSE, metrics] = evaluateTrajectory(X_est, out)
+function [metrics] = evaluateTrajectory(X_est, out, dataset_name)
     
     % Extracting the GT
     GT_Time = out.Sensor_Time.time;
@@ -26,8 +26,10 @@ function [RMSE, metrics] = evaluateTrajectory(X_est, out)
     end
 
     metrics = compareTrajectories(tform_est, tform_GT);
-    RMSE = metrics.AbsoluteRMSE;
+    MaxAbsoluteError = max(metrics.AbsoluteError);
+    ARMSE = metrics.AbsoluteRMSE;
+    FinalError = metrics.AbsoluteError(end, :);
 
-    fprintf('Absolute RMSE (Position): %.4f m\n', RMSE(1));
-    fprintf('Absolute RMSE (Rotation): %.4f deg\n', RMSE(2));
+    
+    fprintf("%s & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f \\\\\n", dataset_name, MaxAbsoluteError(2), ARMSE(2), FinalError(2), MaxAbsoluteError(1), ARMSE(1), FinalError(1));
 end

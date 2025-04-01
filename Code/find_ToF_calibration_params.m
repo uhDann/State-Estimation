@@ -17,7 +17,7 @@ heading = unwrap(heading(:,1));
 
 find_ToF_offsets([ToF1(:, 1), ToF2(:, 1), ToF3(:, 1)], GT_position, heading);
 
-function ToF_calibrated = find_ToF_offsets(ToF_raw, GT_position, heading)
+function find_ToF_offsets(ToF_raw, GT_position, heading)
 
 ToF1_raw = ToF_raw(:,1);
 ToF2_raw = ToF_raw(:,2);

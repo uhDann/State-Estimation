@@ -33,12 +33,21 @@ accel_LP_raw = interpolate_sensor(accel_LP_raw, 200, 100);
 
 accel_calibrated = calibrate_accel(accel_raw, accel_LP_raw);
 
+% N x 4
+% Updates @ 200Hz
+GT_rotation = squeeze(out.GT_rotation.signals.values);
+GT_heading = quat2eul(GT_rotation, 'ZYX');
+GT_heading = unwrap(GT_heading(:,1));
+
 % N x 3
 % Updates @ 104Hz
 gyro_raw = squeeze(out.Sensor_GYRO.signals.values)';
 gyro_raw = interpolate_sensor(gyro_raw, 200, 104);
 
 gyro_calibrated = calibrate_gyro(gyro_raw);
+
+gyro_yaw = cumtrapz(tIMU, gyro_calibrated(:, 1));
+gyro_yaw = unwrap(gyro_yaw) + (GT_heading(1) - gyro_yaw(1));
 
 % N x 3
 % Updates @ 50
@@ -60,6 +69,9 @@ modelPath = "NNMagCal_2D.mat";
 % mag_yaw = unwrap(atan2(mag_xy_raw(:, 2), mag_xy_raw(:, 1)));
 
 mag_yaw = zero_phase_smooth(mag_yaw, 4, 0.5, 50);
+
+yaw = mag_yaw;
+% yaw = gyro_yaw;
 
 % N x 4
 % Updates @ 10Hz
@@ -97,11 +109,11 @@ P_Est_out = cell(N, 1);
 
 dt = 1/200;
 
-z_meas_tof = [remove_outliers(ToF_mag_to_meas(all_ToF, mag_yaw), 650), mag_yaw];
+z_meas_tof = [remove_outliers(ToF_mag_to_meas(all_ToF, yaw), 650), yaw];
 
 % Initial state (assume first GT position is accurate)
 % [x, y, theta, vx, vy]
-X_k = [z_meas_tof(1, 1), z_meas_tof(1, 2), mag_yaw(1), 0, 0]';
+X_k = [z_meas_tof(1, 1), z_meas_tof(1, 2), yaw(1), 0, 0]';
 % Evaluation showed that RMSE of magnetometer heading is 0.28
 P_k = diag([0.1, 0.1, 0.28, 0.01, 0.01]);
 
